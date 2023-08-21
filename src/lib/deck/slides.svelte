@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte'
+	import { onDestroy, onMount } from 'svelte'
 
 	import Reveal from 'reveal.js'
 	import Highlight from 'reveal.js/plugin/highlight/highlight'
@@ -12,8 +12,10 @@
 
 	import Presentation from './presentation.svelte'
 
+	let deck: Reveal.Api | undefined
+
 	onMount(() => {
-		const deck = new Reveal({
+		deck = new Reveal({
 			plugins: [Markdown, Highlight, Notes],
 			autoAnimateEasing: 'ease',
 			autoAnimateDuration: 1,
@@ -24,10 +26,17 @@
 
 		deck.initialize()
 	})
+
+	onDestroy(() => {
+		deck?.destroy()
+		deck = undefined
+	})
 </script>
 
 <div class="reveal">
 	<div class="slides">
-		<Presentation />
+		{#if deck}
+			<Presentation />
+		{/if}
 	</div>
 </div>
